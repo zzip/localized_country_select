@@ -19,29 +19,29 @@ require 'open-uri'
 namespace :import do
 
   desc "Import country codes and names for various languages from the Unicode.org CLDR archive. Depends on Hpricot gem."
-  task :country_select do
+  lang = ARGV.empty? ? 'lang' : ARGV[0].split(':').last
+  task "country_select:#{lang}".to_sym do
     begin
       require 'hpricot'
     rescue LoadError
       puts "Error: Hpricot library required to use this task (import:country_select)"
       exit
     end
-    
+
     # TODO : Implement locale import chooser from CLDR root via Highline
-    
-    # Setup variables
-    locale = ARGV[1]
-    unless locale
-      puts "\n[!] Usage: rake import:country_select de\n\n"
+
+    # Check lang variable
+    if lang == 'lang' || (/\A[a-z]{2}\z/).match(lang) == nil
+      puts "\n[!] Usage: rake import:country_select:lang (Replace lang variable with language code you need.)\n\n"
       exit 0
     end
 
     # ----- Get the CLDR HTML     --------------------------------------------------
     begin
-      puts "... getting the HTML file for locale '#{locale}'"
-      doc = Hpricot( open("http://www.unicode.org/cldr/data/charts/summary/#{locale}.html") )
+      puts "... getting the HTML file for locale '#{lang}'"
+      doc = Hpricot( open("http://www.unicode.org/cldr/data/charts/summary/#{lang}.html") )
     rescue => e
-      puts "[!] Invalid locale name '#{locale}'! Not found in CLDR (#{e})"
+      puts "[!] Invalid locale name '#{lang}'! Not found in CLDR (#{e})"
       exit 0
     end
 
@@ -50,8 +50,8 @@ namespace :import do
     puts "... parsing the HTML file"
     countries = []
     doc.search("//tr").each do |row|
-      if row.search("td[@class='n']") && 
-         row.search("td[@class='n']").inner_html =~ /^namesterritory$/ && 
+      if row.search("td[@class='n']") &&
+         row.search("td[@class='n']").inner_html =~ /^namesterritory$/ &&
          row.search("td[@class='g']").inner_html =~ /^[A-Z]{2}/
         code   = row.search("td[@class='g']").inner_text
         code   = code[-code.size, 2]
@@ -64,7 +64,7 @@ namespace :import do
 
     # ----- Prepare the output format     ------------------------------------------
     output =<<HEAD
-{ :#{locale} => {
+{ :#{lang} => {
 
     :countries => {
 HEAD
@@ -72,19 +72,19 @@ HEAD
       output << "\t\t\t:#{country[:code]} => \"#{country[:name]}\",\n"
     end
     output <<<<TAIL
-    } 
+    }
 
   }
 }
 TAIL
 
-    
+
     # ----- Write the parsed values into file      ---------------------------------
     puts "\n... writing the output"
-    filename = File.join(File.dirname(__FILE__), '..', 'locale', "#{locale}.rb")
+    filename = File.join(File.dirname(__FILE__), '..', 'locale', "#{lang}.rb")
     filename += '.NEW' if File.exists?(filename) # Append 'NEW' if file exists
     File.open(filename, 'w+') { |f| f << output }
-    puts "\n---\nWritten values for the '#{locale}' into file: #{filename}\n"
+    puts "\n---\nWritten values for the '#{lang}' into file: #{filename}\n"
     # ------------------------------------------------------------------------------
   end
 
