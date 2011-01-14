@@ -79,6 +79,25 @@ class LocalizedCountrySelectTest < Test::Unit::TestCase
     #assert_equal 'Afghánistán', LocalizedCountrySelect::localized_countries_array.first[0]
   end
 
+  def test_include_country_rejects_on_except_option
+    res = !LocalizedCountrySelect::include_country?('AF', except: ['AF'])
+    puts "should not include_country? 'AF' except AF : #{res}"    
+  end
+
+  def test_include_country_accept_on_only_option
+    res = LocalizedCountrySelect::include_country?('AF', only: ['AF'])
+    puts "should include_country? 'AF' : #{res}"    
+
+    res = !LocalizedCountrySelect::include_country?('AD', only: ['AF'])
+    puts "should not include_country? 'AD' : #{res}"    
+  end  
+
+  def test_localized_countries_array_rejects_on_except_option
+    list = LocalizedCountrySelect::localized_countries_array(:except => ['AF'])
+    res = !list.include?(['Afghanistan', 'AF'])
+    puts "rejected 'AF' from array? #{res}"
+  end
+
   def test_priority_countries_returns_correctly_and_in_correct_order
     assert_nothing_raised { LocalizedCountrySelect::priority_countries_array([:TW, :CN]) }
     I18n.locale = 'en'
@@ -101,7 +120,7 @@ class LocalizedCountrySelectTest < Test::Unit::TestCase
     #assert_match Regexp.new(Regexp.escape(%Q{<option value="BI">Burundi</option>\n<option value="TD">Čad</option>})), localized_country_select(:user, :country)
   end
 
-  private
+  # private
 
   def setup
     ['en'].each do |locale|

@@ -22,10 +22,24 @@ module LocalizedCountrySelect
   class << self
     # Returns array with codes and localized country names (according to <tt>I18n.locale</tt>)
     # for <tt><option></tt> tags
-    def localized_countries_array
-      I18n.translate(:countries).map { |key, value| [value, key.to_s.upcase] }.
-                                 sort_by { |country| country.first.parameterize }
+    def localized_countries_array options = {}
+      res = []
+      list = I18n.translate(:countries).each do |key, value| 
+        res << [value, key.to_s.upcase] if include_country?(key.to_s, options)
+      end
+      res.sort_by { |country| country.first.parameterize }
     end
+    
+    def include_country?(key, options)                                           
+      if options[:only] 
+        return options[:only].include?(key)
+      end      
+      if options[:except] 
+        return !options[:except].include?(key)
+      end
+      true      
+    end      
+      
     # Return array with codes and localized country names for array of country codes passed as argument
     # == Example
     #   priority_countries_array([:TW, :CN])
@@ -64,14 +78,14 @@ module ActionView
       # Returns a string of option tags for countries according to locale. Supply the country code in upper-case ('US', 'DE') 
       # as +selected+ to have it marked as the selected option tag.
       # Country codes listed as an array of symbols in +priority_countries+ argument will be listed first
-      def localized_country_options_for_select(selected = nil, priority_countries = nil)
+      def localized_country_options_for_select(selected = nil, priority_countries = nil, options = {})
         country_options = ""
         if priority_countries
           country_options += options_for_select(LocalizedCountrySelect::priority_countries_array(priority_countries), selected)
           country_options += "<option value=\"\" disabled=\"disabled\">-------------</option>\n"
-          return country_options + options_for_select(LocalizedCountrySelect::localized_countries_array - LocalizedCountrySelect::priority_countries_array(priority_countries), selected)
+          return country_options + options_for_select(LocalizedCountrySelect::localized_countries_array(options) - LocalizedCountrySelect::priority_countries_array(priority_countries), selected)
         else
-          return country_options + options_for_select(LocalizedCountrySelect::localized_countries_array, selected)
+          return country_options + options_for_select(LocalizedCountrySelect::localized_countries_array(options), selected)
         end
       end
       alias_method :country_options_for_select, :localized_country_options_for_select
@@ -85,7 +99,7 @@ module ActionView
         value = value(object)
         content_tag("select",
           add_options(
-            localized_country_options_for_select(value, priority_countries),
+            localized_country_options_for_select(value, priority_countries, options),
             options, value
           ), html_options
         )
