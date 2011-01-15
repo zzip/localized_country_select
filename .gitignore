@@ -16,7 +16,9 @@ pkg
 pkg/*.gem
 
 # custom
-sandbox
+sandbox 
+
+Gemfile.lock
 
 # Have editor/IDE/OS specific files you need to ignore? Consider using a global gitignore: 
 #

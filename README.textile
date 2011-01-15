@@ -75,9 +75,23 @@ h2. Options
   <%= localized_country_select(:user, :country, ['English'], :include_blank => 'Please choose...', :only => ['German', 'French']) %>  
 </pre>
 
+h2. Important!
+
+Add translations for your language requirements using the rake tasks supplied, then use the generator to copy them into the Rails locales folder.
+
 h2. Framework usage
 
 This plugin should also integrate nicely with various formbuilders, including Formtastic
+
+Formtastic example:
+
+<pre>
+<%= semantic_form_for @user do |form| %>  
+  ...
+  <%= form.input :home_country, :as => :country, :priority_countries => ['USA'], :include_blank => 'Please choose country...', :only => ['USA', 'Germany', 'France']) %>    
+  ...
+<% end %>  
+</pre>
 
 h2. Copyright
 
