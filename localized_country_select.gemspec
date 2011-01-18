@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Kristian Mandrup"]
-  s.date = %q{2011-01-15}
+  s.date = %q{2011-01-18}
   s.description = %q{Localized country select for Rails 2.3+ with options to control countrys to display}
   s.email = %q{kmandrup@gmail.com}
   s.extra_rdoc_files = [
@@ -23,12 +23,18 @@ Gem::Specification.new do |s|
     "VERSION",
     "init.rb",
     "install.rb",
+    "lib/generators/localized_country_select/import/content_helper.rb",
+    "lib/generators/localized_country_select/import/import_generator.rb",
+    "lib/generators/localized_country_select/import/parse_helper.rb",
     "lib/generators/localized_country_select/locales/locales_generator.rb",
     "lib/localized_country_select.rb",
     "lib/tasks/generate_yaml_locales.rake",
     "lib/tasks/localized_country_select_tasks.rake",
     "locale/en.rb",
     "locale/ru.rb",
+    "localized_country_select.gemspec",
+    "tasks/generate_yaml_locales.rake",
+    "tasks/localized_country_select_tasks.rake",
     "test/localized_country_select_test.rb",
     "uninstall.rb"
   ]
