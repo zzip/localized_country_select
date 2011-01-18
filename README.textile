@@ -13,7 +13,17 @@ You can easily translate country codes in your application like this:
   <%= I18n.t @user.country, :scope => 'countries' %>  
 </pre>
 
-h2. Generating locale files
+h2. Generating country locale files
+
+The project comes with both rake tasks and a generator to generate and import locale files for countries:
+
+h3. Rails 3 generator
+
+The project now comes with a Rails 3 generator to import locale files and place them in config/locales in your Rails 3 app.
+
+@rails g localized_country_select:import de ru --file-ext yml@
+
+h3. Rake import tasks
 
 The following Rake tasks can be used for importing country names from Unicode.org's CLDR repository (http://www.unicode.org/cldr/data/charts/summary/root.html)
 
@@ -24,13 +34,7 @@ Note: You need to replace lang variable with lang you need.
 
 The _import_ one generates ruby files, the _yaml_locales_ task generates yml files.
 
-
 Don't forget to restart the application when you add new locale.
-
-Comes with a Rake task <tt>rake import:country_select:lang</tt> (You need to replace lang variable with lang you need.) for importing country names
-from Unicode.org's CLDR repository (http://www.unicode.org/cldr/data/charts/summary/root.html)
-Don't forget to restart the application when you add new locale.
-
 
 ActionView helper code is adapted from Rails' default *country_select* plugin (previously in core).
 See http://github.com/rails/country_select/tree/master/lib/country_select.rb
